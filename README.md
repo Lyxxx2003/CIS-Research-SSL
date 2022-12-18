@@ -9,6 +9,7 @@ This repository uses <br />
 1. referencing codes from https://github.com/Coder-Yu/SELFRec <br />
 2. articles from Self-Supervised Learning for Recommender Systems: A Survey <br />
 The authors of our referencing documentations are Yu, Junliang and Yin, Hongzhi and Xia, Xin and Chen, Tong and Li, Jundong and Huang, Zi <br />
+
 The citation of the article is <br />
 @article{yu2022self, <br />
   title={Self-Supervised Learning for Recommender Systems: A Survey}, <br />
