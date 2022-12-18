@@ -5,8 +5,7 @@ This repository is designed for storing referencing and editted codes of a resea
 Yuxin, Li; Jingyi, Wang; Rui Zhou; Xinyang Wu; Baichuan Xu
 
 # Credit:
-This repository uses referencing codes from 
-https://github.com/Coder-Yu/SELFRec 
+This repository uses referencing codes from https://github.com/Coder-Yu/SELFRec <br />
 and articles from
 @article{yu2022self,
   title={Self-Supervised Learning for Recommender Systems: A Survey},
