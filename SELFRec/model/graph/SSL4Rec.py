@@ -4,7 +4,8 @@ import torch.nn.functional as F
 from base.graph_recommender import GraphRecommender
 from util.conf import OptionConf
 from util.sampler import next_batch_pairwise
-from util.loss_torch import l2_reg_loss, InfoNCE, batch_softmax_loss
+from util.loss_torch import l2_reg_loss, InfoNCE, batch_softmax_loss, InfoNCE_N
+import random
 
 # Paper: Self-supervised Learning for Large-scale Item Recommendations. CIKM'21
 
@@ -23,16 +24,44 @@ class SSL4Rec(GraphRecommender):
         self.drop_rate = float(args['-drop'])
         self.model = DNN_Encoder(self.data, self.emb_size, self.drop_rate, self.tau)
 
+
     def train(self):
         model = self.model.cuda()
         optimizer = torch.optim.Adam(model.parameters(), lr=self.lRate)
         for epoch in range(self.maxEpoch):
             for n, batch in enumerate(next_batch_pairwise(self.data, self.batch_size)):
                 query_idx, item_idx, _neg = batch
+
+                '''下面是更改内容'''
+                ##
+                negative_id=[]
+                negative_num=[]
+                n1=1
+                i = 1
+                a=self.data.item_num
+                while i < n1:
+                    num = int(random.randint(0, a))
+                    if num != n and num not in negative_num:
+                        negative_num.append((num))
+                        for x, batch1 in enumerate(next_batch_pairwise(self.data, self.batch_size),num):
+                            query_idx1, item_idx1, _neg1 = batch1
+                            break
+                        negative_id.append(item_idx1)
+                        # tmp = self.item_encoding(item_idx1)
+                        # # print('tmp2:', type(tmp))
+                        # tmp = F.normalize(tmp, dim=1)
+
+                        i = i + 1
+                ##
+
+
                 model.train()
                 query_emb, item_emb = model(query_idx, item_idx)
                 rec_loss = batch_softmax_loss(query_emb, item_emb, self.tau)
-                cl_loss = self.cl_rate * model.cal_cl_loss(item_idx)
+                '''改后的'''
+                cl_loss = self.cl_rate * model.cal_cl_loss_N(item_idx,negative_id)
+                '''原来的'''
+                # cl_loss = self.cl_rate * model.cal_cl_loss(item_idx)
                 batch_loss = rec_loss + l2_reg_loss(self.reg, query_emb, item_emb) + cl_loss
                 # Backward and optimize
                 optimizer.zero_grad()
@@ -53,6 +82,7 @@ class SSL4Rec(GraphRecommender):
     def predict(self, u):
         u = self.data.get_user_id(u)
         score = torch.matmul(self.query_emb[u], self.item_emb.transpose(0, 1))
+                                                                                    # '数据增强'
         return score.cpu().numpy()
 
 
@@ -102,4 +132,24 @@ class DNN_Encoder(nn.Module):
         item_view1, item_view_2 = self.item_encoding(idx)
         item_view1, item_view_2 = F.normalize(item_view1, dim=1), F.normalize(item_view_2, dim=1)
         cl_loss = InfoNCE(item_view1, item_view_2, self.tau)
+        return cl_loss
+
+    '''新增的函数'''
+    def cal_cl_loss_N(self, idx, negative_id):
+        v1=[]
+        v2=[]
+        item_view1, item_view_2 = self.item_encoding(idx)
+        item_view1, item_view_2 = F.normalize(item_view1, dim=1), F.normalize(item_view_2, dim=1)
+        v1.append(item_view1)
+        v2.append(item_view_2)
+        # negative = []
+        for i in negative_id:
+            tmp1,tmp2 = self.item_encoding(i)
+            # print('tmp2:', type(tmp))
+            tmp1 = F.normalize(tmp1, dim=1)
+            tmp2 = F.normalize(tmp2, dim=1)
+            v1.append(tmp1)
+            v2.append(tmp2)
+
+        cl_loss = InfoNCE_N(v1, v2, self.tau)
         return cl_loss
