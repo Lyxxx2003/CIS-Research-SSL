@@ -4,7 +4,7 @@ from util.conf import ModelConf
 if __name__ == '__main__':
     # Register your model here
     baseline = ['LightGCN','DirectAU','MF']
-    graph_models = ['SGL', 'SimGCL', 'SEPT', 'MHCN', 'BUIR', 'SelfCF', 'SSL4Rec', 'XSimGCL', 'NCL','MixGCF']
+    graph_models = ['SGL', 'SimGCL', 'SEPT', 'MHCN', 'BUIR', 'SelfCF', 'SSL4Rec', 'XSimGCL', 'NCL','MixGCF', 'BothSSL4Rec', 'SL4Rec']
     sequential_models = []
 
     print('=' * 80)
@@ -15,7 +15,8 @@ if __name__ == '__main__':
     print('   '.join(baseline))
     print('-' * 80)
     print('Graph-Based Models:')
-    print('   '.join(graph_models))
+    print('   '.join(graph_models[:10]))
+    print('   '.join(graph_models[10:]))
 
     print('=' * 80)
     model = input('Please enter the model you want to run:')
