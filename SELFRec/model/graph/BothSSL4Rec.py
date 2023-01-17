@@ -32,7 +32,7 @@ class BothSSL4Rec(GraphRecommender):
                 model.train()
                 query_emb, item_emb = model(query_idx, item_idx)
                 rec_loss = batch_softmax_loss(query_emb, item_emb, self.tau)
-                cl_loss = self.cl_rate * model.cal_cl_loss(item_idx)+self.cl_rate * model.cal_cl_loss(query_idx)
+                cl_loss = self.cl_rate * model.cal_cl_loss_item(item_idx)+self.cl_rate * model.cal_cl_loss_user(query_idx)
                 batch_loss = rec_loss + l2_reg_loss(self.reg, query_emb, item_emb) + cl_loss
                 # Backward and optimize
                 optimizer.zero_grad()
@@ -88,6 +88,7 @@ class DNN_Encoder(nn.Module):
 
         return q_emb, i_emb
 
+    # item_feature SSL
     def item_encoding(self, x):
         i_emb = self.initial_item_emb[x]
         i1_emb = self.dropout(i_emb)
@@ -98,8 +99,25 @@ class DNN_Encoder(nn.Module):
 
         return i1_emb, i2_emb
 
-    def cal_cl_loss(self, idx):
+    def cal_cl_loss_item(self, idx):
         item_view1, item_view_2 = self.item_encoding(idx)
+        item_view1, item_view_2 = F.normalize(item_view1, dim=1), F.normalize(item_view_2, dim=1)
+        cl_loss = InfoNCE(item_view1, item_view_2, self.tau)
+        return cl_loss
+    
+    # query_feature SSL
+    def user_encoding(self, x):
+        i_emb = self.initial_user_emb[x]
+        i1_emb = self.dropout(i_emb)
+        i2_emb = self.dropout(i_emb)
+
+        i1_emb = self.item_tower(i1_emb)
+        i2_emb = self.item_tower(i2_emb)
+
+        return i1_emb, i2_emb
+
+    def cal_cl_loss_user(self, idx):
+        item_view1, item_view_2 = self.user_encoding(idx)
         item_view1, item_view_2 = F.normalize(item_view1, dim=1), F.normalize(item_view_2, dim=1)
         cl_loss = InfoNCE(item_view1, item_view_2, self.tau)
         return cl_loss
