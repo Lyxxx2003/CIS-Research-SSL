@@ -111,8 +111,8 @@ class DNN_Encoder(nn.Module):
         i1_emb = self.dropout(i_emb)
         i2_emb = self.dropout(i_emb)
 
-        i1_emb = self.item_tower(i1_emb)
-        i2_emb = self.item_tower(i2_emb)
+        i1_emb = self.user_tower(i1_emb)
+        i2_emb = self.user_tower(i2_emb)
 
         return i1_emb, i2_emb
 
