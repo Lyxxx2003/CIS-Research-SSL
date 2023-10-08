@@ -4,6 +4,11 @@ This repository is designed for storing referencing and editted codes of a resea
 # Collaborators
 Yuxin, Li; Jingyi, Wang; Rui Zhou; Xinyang Wu; Baichuan Xu
 
+# Abstract
+It is proven that among the one-tower/two-tower/three-tower models, the two-tower model performs the best.
+
+It is shown that the ratio between negative and positive sample sets are not determinant for the overall effect of the two-tower model.
+
 # Credit:
 This repository uses <br />
 1. referencing codes from https://github.com/Coder-Yu/SELFRec <br />
