@@ -1,5 +1,7 @@
 # CIS-Research-SSL
-This repository is designed for storing referencing and editted codes of a research project concerning Self-Supervised Learning in Recommendation System
+This repository is designed for storing referencing and editted codes of a research project concerning Self-Supervised Learning in Recommendation System.
+
+The main contribution is under Model/Graph folder, SSL4Rec.
 
 # Collaborators
 Yuxin, Li; Jingyi, Wang; Rui Zhou; Xinyang Wu; Baichuan Xu
