@@ -3,6 +3,8 @@ This repository is designed for storing referencing and editted codes of a resea
 
 The main contribution is under Model/Graph folder, SSL4Rec.
 
+The paper is published now with the URL: https://tns.ewapublishing.org/article.html?pk=31e0520fca694356969266fd6705f3f5.
+
 # Collaborators
 Yuxin, Li; Jingyi, Wang; Rui Zhou; Xinyang Wu; Baichuan Xu
 
